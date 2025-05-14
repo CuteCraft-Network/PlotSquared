@@ -30,6 +30,7 @@ import com.plotsquared.core.plot.flag.implementations.AnimalCapFlag;
 import com.plotsquared.core.plot.flag.implementations.DoneFlag;
 import com.plotsquared.core.plot.flag.implementations.EntityCapFlag;
 import com.plotsquared.core.plot.flag.implementations.HangingBreakFlag;
+import com.plotsquared.core.plot.flag.implementations.HopperCapFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileAttackFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileCapFlag;
 import com.plotsquared.core.plot.flag.implementations.MiscBreakFlag;
@@ -39,12 +40,15 @@ import com.plotsquared.core.plot.flag.implementations.PveFlag;
 import com.plotsquared.core.plot.flag.implementations.PvpFlag;
 import com.plotsquared.core.plot.flag.implementations.TamedAttackFlag;
 import com.plotsquared.core.plot.flag.implementations.VehicleCapFlag;
+import com.plotsquared.core.plot.flag.implementations.VillagerCapFlag;
 import com.plotsquared.core.util.EntityUtil;
 import com.plotsquared.core.util.entity.EntityCategories;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -373,14 +377,18 @@ public class BukkitEntityUtil {
             );
         }
 
-        // Has to go go before vehicle as horses are both
+        // Has to go before vehicle as horses are both
         // animals and vehicles
-        if (EntityCategories.ANIMAL.contains(entityType) || EntityCategories.VILLAGER
-                .contains(entityType) || EntityCategories.TAMEABLE.contains(entityType)) {
+        if (EntityCategories.ANIMAL.contains(entityType) || EntityCategories.TAMEABLE.contains(entityType)) {
             return EntityUtil
                     .checkEntity(plot, EntityCapFlag.ENTITY_CAP_UNLIMITED, MobCapFlag.MOB_CAP_UNLIMITED,
                             AnimalCapFlag.ANIMAL_CAP_UNLIMITED
                     );
+        }
+
+        if (EntityCategories.VILLAGER.contains(entityType)) {
+            return EntityUtil
+                    .checkEntity(plot, VillagerCapFlag.VILLAGER_CAP_UNLIMITED);
         }
 
         if (EntityCategories.HOSTILE.contains(entityType)) {
@@ -397,6 +405,19 @@ public class BukkitEntityUtil {
         }
 
         return EntityUtil.checkEntity(plot, EntityCapFlag.ENTITY_CAP_UNLIMITED);
+    }
+
+    public static boolean checkTileEntity(BlockState entity, Plot plot) {
+        if (plot == null || !plot.hasOwner() || plot.getFlags().isEmpty() && plot.getArea()
+                .getFlagContainer().getFlagMap().isEmpty()) {
+            return false;
+        }
+
+        if (entity instanceof Hopper) {
+            return EntityUtil.checkEntity(plot, HopperCapFlag.HOPPER_CAP_UNLIMITED);
+        }
+
+        return true;
     }
 
 }

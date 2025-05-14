@@ -26,10 +26,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ANIMAL;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ENTITY;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_HOPPER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MISC;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MOB;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MONSTER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_VEHICLE;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_VILLAGER;
 
 /**
  * Entity related general utility methods
@@ -48,6 +50,8 @@ public class EntityUtil {
             case "animal-cap" -> CAP_ANIMAL;
             case "vehicle-cap" -> CAP_VEHICLE;
             case "misc-cap" -> CAP_MISC;
+            case "villager-cap" -> CAP_VILLAGER;
+            case "hopper-cap" -> CAP_HOPPER;
             default -> CAP_ENTITY;
         };
     }

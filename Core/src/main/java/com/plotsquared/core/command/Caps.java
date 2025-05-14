@@ -25,10 +25,12 @@ import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.flag.PlotFlag;
 import com.plotsquared.core.plot.flag.implementations.AnimalCapFlag;
 import com.plotsquared.core.plot.flag.implementations.EntityCapFlag;
+import com.plotsquared.core.plot.flag.implementations.HopperCapFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileCapFlag;
 import com.plotsquared.core.plot.flag.implementations.MiscCapFlag;
 import com.plotsquared.core.plot.flag.implementations.MobCapFlag;
 import com.plotsquared.core.plot.flag.implementations.VehicleCapFlag;
+import com.plotsquared.core.plot.flag.implementations.VillagerCapFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -36,10 +38,12 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ANIMAL;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ENTITY;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_HOPPER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MISC;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MOB;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MONSTER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_VEHICLE;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_VILLAGER;
 
 @CommandDeclaration(command = "caps",
         category = CommandCategory.INFO,
@@ -72,6 +76,8 @@ public class Caps extends SubCommand {
         sendFormatted(plot, player, VehicleCapFlag.class, countedEntities, "vehicle", CAP_VEHICLE);
         sendFormatted(plot, player, MiscCapFlag.class, countedEntities, "misc", CAP_MISC);
         sendFormatted(plot, player, EntityCapFlag.class, countedEntities, "entities", CAP_ENTITY);
+        sendFormatted(plot, player, VillagerCapFlag.class, countedEntities, "villager", CAP_VILLAGER);
+        sendFormatted(plot, player, HopperCapFlag.class, countedEntities, "hopper", CAP_HOPPER);
         return true;
     }
 

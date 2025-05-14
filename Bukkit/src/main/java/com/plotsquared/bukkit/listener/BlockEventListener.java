@@ -20,6 +20,7 @@ package com.plotsquared.bukkit.listener;
 
 import com.google.inject.Inject;
 import com.plotsquared.bukkit.player.BukkitPlayer;
+import com.plotsquared.bukkit.util.BukkitEntityUtil;
 import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.configuration.Settings;
@@ -143,7 +144,8 @@ public class BlockEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void blockCreate(BlockPlaceEvent event) {
-        Location location = BukkitUtil.adapt(event.getBlock().getLocation());
+        Block block = event.getBlock();
+        Location location = BukkitUtil.adapt(block.getLocation());
         PlotArea area = location.getPlotArea();
         if (area == null) {
             return;
@@ -171,7 +173,6 @@ public class BlockEventListener implements Listener {
             } else if (!plot.isAdded(pp.getUUID())) {
                 List<BlockTypeWrapper> place = plot.getFlag(PlaceFlag.class);
                 if (place != null) {
-                    Block block = event.getBlock();
                     if (place.contains(
                             BlockTypeWrapper.get(BukkitAdapter.asBlockType(block.getType())))) {
                         return;
@@ -199,8 +200,14 @@ public class BlockEventListener implements Listener {
                     return;
                 }
             }
+            if (BukkitEntityUtil.checkTileEntity(block.getState(), plot)) {
+                plot.debug("Could not place " + event.getBlock().getType() +
+                        "because cap is exceeded");
+                event.setCancelled(true);
+                return;
+            }
+
             if (plot.getFlag(DisablePhysicsFlag.class)) {
-                Block block = event.getBlockPlaced();
                 if (block.getType().hasGravity()) {
                     sendBlockChange(block.getLocation(), block.getBlockData());
                     plot.debug(event.getBlock().getType()

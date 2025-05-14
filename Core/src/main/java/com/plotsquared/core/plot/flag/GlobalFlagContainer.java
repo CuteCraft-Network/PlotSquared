@@ -59,6 +59,7 @@ import com.plotsquared.core.plot.flag.implementations.HangingBreakFlag;
 import com.plotsquared.core.plot.flag.implementations.HangingPlaceFlag;
 import com.plotsquared.core.plot.flag.implementations.HealFlag;
 import com.plotsquared.core.plot.flag.implementations.HideInfoFlag;
+import com.plotsquared.core.plot.flag.implementations.HopperCapFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileAttackFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileCapFlag;
 import com.plotsquared.core.plot.flag.implementations.HostileInteractFlag;
@@ -93,6 +94,7 @@ import com.plotsquared.core.plot.flag.implementations.PreventCreativeCopyFlag;
 import com.plotsquared.core.plot.flag.implementations.PriceFlag;
 import com.plotsquared.core.plot.flag.implementations.ProjectileChangeBlockFlag;
 import com.plotsquared.core.plot.flag.implementations.ProjectilesFlag;
+import com.plotsquared.core.plot.flag.implementations.VillagerCapFlag;
 import com.plotsquared.core.plot.flag.implementations.WeavingDeathPlace;
 import com.plotsquared.core.plot.flag.implementations.PveFlag;
 import com.plotsquared.core.plot.flag.implementations.PvpFlag;
@@ -229,11 +231,13 @@ public final class GlobalFlagContainer extends FlagContainer {
         // Integer flags
         this.addFlag(AnimalCapFlag.ANIMAL_CAP_UNLIMITED);
         this.addFlag(EntityCapFlag.ENTITY_CAP_UNLIMITED);
+        this.addFlag(HopperCapFlag.HOPPER_CAP_UNLIMITED);
         this.addFlag(HostileCapFlag.HOSTILE_CAP_UNLIMITED);
         this.addFlag(MiscCapFlag.MISC_CAP_UNLIMITED);
         this.addFlag(MobCapFlag.MOB_CAP_UNLIMITED);
         this.addFlag(TimeFlag.TIME_DISABLED);
         this.addFlag(VehicleCapFlag.VEHICLE_CAP_UNLIMITED);
+        this.addFlag(VillagerCapFlag.VILLAGER_CAP_UNLIMITED);
 
         // Misc
         this.addFlag(BlockedCmdsFlag.BLOCKED_CMDS_FLAG_NONE);

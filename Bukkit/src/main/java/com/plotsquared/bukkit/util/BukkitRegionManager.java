@@ -41,10 +41,11 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,10 +58,12 @@ import java.util.Set;
 
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ANIMAL;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_ENTITY;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_HOPPER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MISC;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MOB;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_MONSTER;
 import static com.plotsquared.core.util.entity.EntityCategories.CAP_VEHICLE;
+import static com.plotsquared.core.util.entity.EntityCategories.CAP_VILLAGER;
 
 @Singleton
 public class BukkitRegionManager extends RegionManager {
@@ -102,62 +105,34 @@ public class BukkitRegionManager extends RegionManager {
         int tx = top.getX() >> 4;
         int tz = top.getZ() >> 4;
 
-        int size = tx - bx << 4;
-
         Set<Chunk> chunks = new HashSet<>();
-        for (int X = bx; X <= tx; X++) {
-            for (int Z = bz; Z <= tz; Z++) {
-                if (world.isChunkLoaded(X, Z)) {
-                    chunks.add(world.getChunkAt(X, Z));
+        for (int x = bx; x <= tx; x++) {
+            for (int z = bz; z <= tz; z++) {
+                if (world.isChunkLoaded(x, z)) {
+                    chunks.add(world.getChunkAt(x, z));
                 }
             }
         }
 
-        boolean doWhole = false;
-        List<Entity> entities = null;
-        if (size > 200 && chunks.size() > 200) {
-            entities = world.getEntities();
-            if (entities.size() < 16 + size / 8) {
-                doWhole = true;
-            }
-        }
+        int[] count = new int[8];
+        for (Chunk chunk : chunks) {
+            int x = chunk.getX();
+            int z = chunk.getZ();
+            boolean isBorderChunk = x == bx || x == tx || z == bz || z == tz;
 
-        int[] count = new int[6];
-        if (doWhole) {
-            for (Entity entity : entities) {
-                org.bukkit.Location location = entity.getLocation();
-                PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
-                    if (chunks.contains(chunk)) {
-                        int X = chunk.getX();
-                        int Z = chunk.getZ();
-                        if (X > bx && X < tx && Z > bz && Z < tz) {
-                            count(count, entity);
-                        } else {
-                            Plot other = area.getPlot(BukkitUtil.adapt(location));
-                            if (plot.equals(other)) {
-                                count(count, entity);
-                            }
-                        }
-                    }
-                });
+            for (Entity entity : chunk.getEntities()) {
+                if (!isBorderChunk || plot.equals(area.getPlot(BukkitUtil.adapt(entity.getLocation())))) {
+                    count(count, entity);
+                }
             }
-        } else {
-            for (Chunk chunk : chunks) {
-                int X = chunk.getX();
-                int Z = chunk.getZ();
-                Entity[] entities1 = chunk.getEntities();
-                for (Entity entity : entities1) {
-                    if (X == bx || X == tx || Z == bz || Z == tz) {
-                        Plot other = area.getPlot(BukkitUtil.adapt(entity.getLocation()));
-                        if (plot.equals(other)) {
-                            count(count, entity);
-                        }
-                    } else {
-                        count(count, entity);
-                    }
+
+            for (BlockState tileEntity : chunk.getTileEntities()) {
+                if (!isBorderChunk || plot.equals(area.getPlot(BukkitUtil.adapt(tileEntity.getLocation())))) {
+                    count(count, tileEntity);
                 }
             }
         }
+
         return count;
     }
 
@@ -330,10 +305,12 @@ public class BukkitRegionManager extends RegionManager {
         } else if (EntityCategories.PROJECTILE.contains(entityType) || EntityCategories.OTHER.contains(entityType) || EntityCategories.HANGING
                 .contains(entityType)) {
             count[CAP_MISC]++;
-        } else if (EntityCategories.ANIMAL.contains(entityType) || EntityCategories.VILLAGER.contains(entityType) || EntityCategories.TAMEABLE
+        } else if (EntityCategories.ANIMAL.contains(entityType) || EntityCategories.TAMEABLE
                 .contains(entityType)) {
             count[CAP_MOB]++;
             count[CAP_ANIMAL]++;
+        } else if (EntityCategories.VILLAGER.contains(entityType)) {
+            count[CAP_VILLAGER]++;
         } else if (EntityCategories.VEHICLE.contains(entityType)) {
             count[CAP_VEHICLE]++;
         } else if (EntityCategories.HOSTILE.contains(entityType)) {
@@ -341,6 +318,12 @@ public class BukkitRegionManager extends RegionManager {
             count[CAP_MONSTER]++;
         }
         count[CAP_ENTITY]++;
+    }
+
+    private void count(int[] count, @NonNull BlockState tileEntity) {
+        if (tileEntity instanceof Hopper) {
+            count[CAP_HOPPER]++;
+        }
     }
 
 }
